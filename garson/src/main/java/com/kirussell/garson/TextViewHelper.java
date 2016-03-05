@@ -1,6 +1,7 @@
 package com.kirussell.garson;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -55,6 +56,8 @@ public class TextViewHelper {
         }
         if (textColorResId > 0) {
             textView.setTextColor(ContextCompat.getColor(ctx, textColorResId));
+        } else {
+            textView.setTextColor(Color.WHITE);
         }
         textView.setText(text);
         return textView;

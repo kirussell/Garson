@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Garson</string>
-    <string name="hidden_text_tip">Text also can be masked and highlighted</string>
+    <string name="hidden_text_tip">Text also can be masked and highlighted, to dismiss click on this text</string>
+    <string name="hint_android_logo">Garson highlights logo by creating mask from view, click anywhere outside highlighted view to go next</string>
+    <string name="hint_android_logo_vest">You can pass shape that will be highlighted. Click on highlighted view to go next</string>
 </resources>
