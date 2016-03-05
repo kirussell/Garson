@@ -5,6 +5,8 @@ import android.view.ViewTreeObserver;
 
 /**
  * Created by russellkim on 23/02/16.
+ * Util methods to handle ViewTreeObserver listeners
+ * - OnPreDrawListener
  */
 public class ViewTreeObserverUtils {
 

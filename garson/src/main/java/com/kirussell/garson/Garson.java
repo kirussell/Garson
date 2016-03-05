@@ -27,6 +27,8 @@ import static com.kirussell.garson.ViewTreeObserverUtils.*;
 
 /**
  * Created by russellkim on 26/01/16.
+ *
+ * more info in README.md
  */
 public class Garson {
 
@@ -38,16 +40,17 @@ public class Garson {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    private TextViewHelper textHelper;
+
     private FrameLayout areaView;
     private View viewToTip;
     private BackgroundView backgroundView;
     private TextView hintTextView;
     private CharSequence withText;
     private int dimColor = Color.argb(122, 0, 0, 0);
-    private int hintTextStyleResId;
-    private int hintTextSizeDimenId;
-    private int hintTextColorResId;
-    private TextViewHelper hintTextHelper;
+    private int textStyleResId;
+    private int textSizeDimenId;
+    private int textColorResId;
     private int padding;
     private Drawable tipViewShape;
     private ClickCallbacks clicks;
@@ -58,9 +61,14 @@ public class Garson {
                 TypedValue.COMPLEX_UNIT_DIP, 16,
                 this.areaView.getResources().getDisplayMetrics()
         );
-        hintTextHelper = new TextViewHelper(areaView.getContext(), executor);
+        textHelper = new TextViewHelper(areaView.getContext(), executor);
     }
 
+    /**
+     * Creates Garson to highlight something inside activity
+     * @param area to dim
+     * @return created Gason obj
+     */
     public static Garson in(final Activity area) {
         FrameLayout frame = new FrameLayout(area);
         area.getWindow().addContentView(
@@ -73,29 +81,48 @@ public class Garson {
         return new Garson(frame);
     }
 
+    /**
+     * Creates Garson to highlight something inside FrameLayout
+     * @param area to dim
+     * @return created Garson obj
+     */
     public static Garson in(FrameLayout area) {
         area.setTag(GARSON_ID, Boolean.FALSE);
         return new Garson(area);
     }
 
+    /**
+     * Text to explain tip
+     */
     public Garson with(CharSequence text) {
         this.withText = text;
         return this;
     }
 
+    /**
+     * Text to explain tip
+     */
     public Garson with(CharSequence text, @DimenRes int textSizeResId, @ColorRes int textColorResId) {
         this.withText = text;
-        this.hintTextSizeDimenId = textSizeResId;
-        this.hintTextColorResId = textColorResId;
+        this.textSizeDimenId = textSizeResId;
+        this.textColorResId = textColorResId;
         return this;
     }
 
+    /**
+     * Text to explain tip
+     */
     public Garson with(CharSequence text, @StyleRes int styleResId) {
         this.withText = text;
-        this.hintTextStyleResId = styleResId;
+        this.textStyleResId = styleResId;
         return this;
     }
 
+    /**
+     * Color.argb(122,0,0,0) by default
+     * @param color for dim
+     * @return self
+     */
     public Garson withDimColor(int color) {
         this.dimColor = color;
         return this;
@@ -106,11 +133,20 @@ public class Garson {
         return this;
     }
 
+    /**
+     * Will show Garson-tip with mask obtained from shape
+     * @param view object that will be highlighted
+     * @param withShape shape to create mask
+     */
     public void tip(View view, Drawable withShape) {
         tipViewShape = withShape;
         tip(view);
     }
 
+    /**
+     * Will show Garson-tip with mask obtained from view
+     * @param view object that will be highlighted
+     */
     public void tip(View view) {
         viewToTip = view;
         insertTipView();
@@ -118,14 +154,14 @@ public class Garson {
     }
 
     private void insertTextView() {
-        hintTextView = hintTextHelper.createTextView(
-                hintTextSizeDimenId, hintTextColorResId,
-                hintTextStyleResId, withText
+        hintTextView = textHelper.createTextView(
+                textSizeDimenId, textColorResId,
+                textStyleResId, withText
         );
         onPreDrawAction(new Runnable() {
             @Override
             public void run() {
-                hintTextHelper.addTextView(
+                textHelper.addTextView(
                         areaView,
                         new Point(viewToTip.getWidth(), viewToTip.getHeight()),
                         getMaskLocation(viewToTip, areaView), padding, hintTextView
@@ -201,6 +237,9 @@ public class Garson {
         return maskLocation;
     }
 
+    /**
+     * Closes Garson tip and cleans related objects
+     */
     public void dismiss() {
         onDestroy();
     }

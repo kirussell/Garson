@@ -2,6 +2,7 @@ package com.kirussell.garson;
 
 /**
  * Created by russellkim on 29/02/16.
+ * Empty implementation
  */
 public class ClickCallbacksAdapter implements ClickCallbacks {
 

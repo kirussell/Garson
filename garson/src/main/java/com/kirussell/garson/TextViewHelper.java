@@ -28,6 +28,7 @@ import java.util.concurrent.Executor;
 
 /**
  * Created by russellkim on 23/02/16.
+ * Helper methods to create text inside tip layout
  */
 public class TextViewHelper {
 

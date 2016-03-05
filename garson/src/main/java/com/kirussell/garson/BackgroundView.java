@@ -16,6 +16,7 @@ import android.view.View;
 
 /**
  * Created by russellkim on 07/02/16.
+ * View to draw dim color with hole according to given mask
  */
 public class BackgroundView extends View implements GestureDetector.OnGestureListener {
 
