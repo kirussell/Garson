@@ -5,9 +5,7 @@ Garson
 The android library to tip / highlight parts of your layout.
 Just like that:
 
-![](assets/screenshots/highlight_by_view_mask.png)
-![](assets/screenshots/highlight_by_shape.png)
-![](assets/screenshots/hightlight_text.png)
+![](assets/screenshots/garson_sample_screenshots.png)
 
 How to use:
 ---
