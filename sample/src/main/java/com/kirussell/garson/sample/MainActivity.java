@@ -12,6 +12,8 @@ import com.kirussell.garson.Garson;
 
 public class MainActivity extends AppCompatActivity {
 
+    private View ninjaText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +25,13 @@ public class MainActivity extends AppCompatActivity {
                 highlightLogo(v);
             }
         });
-
+        ninjaText = findViewById(R.id.ninjaText);
+        ninjaText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                highlightNinjaText();
+            }
+        });
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -63,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void highlightNinjaText() {
-        View text = findViewById(R.id.ninjaText);
         Garson.in(MainActivity.this)
                 .with(getString(R.string.hidden_text_tip), R.dimen.textSize, 0)
                 .callback(new ClickCallbacksAdapter() {
@@ -72,6 +79,6 @@ public class MainActivity extends AppCompatActivity {
                         garson.dismiss();
                     }
                 })
-                .tip(text);
+                .tip(ninjaText);
     }
 }
