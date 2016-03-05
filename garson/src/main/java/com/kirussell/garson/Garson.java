@@ -212,7 +212,7 @@ public class Garson {
                 Point viewLocation = getViewLocation(viewToTip, areaView);
                 backgroundView.setState(
                         dimColor,
-                        generateAndSetMask(viewToTip, tipViewShape, dimColor),
+                        generateMask(viewToTip, tipViewShape, dimColor),
                         viewLocation
                 );
                 animateBackgroundReveal(backgroundView, viewLocation, viewToTip, areaView);
@@ -253,7 +253,7 @@ public class Garson {
         }
     }
 
-    private Bitmap generateAndSetMask(final View viewToTip, @Nullable Drawable tipViewShape, int color) {
+    private Bitmap generateMask(final View viewToTip, @Nullable Drawable tipViewShape, int color) {
         int width = viewToTip.getWidth();
         int height = viewToTip.getHeight();
         Bitmap mask = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
