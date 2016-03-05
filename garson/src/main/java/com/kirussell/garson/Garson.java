@@ -9,14 +9,19 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.AnimRes;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -27,7 +32,7 @@ import static com.kirussell.garson.ViewTreeObserverUtils.*;
 
 /**
  * Created by russellkim on 26/01/16.
- *
+ * <p/>
  * more info in README.md
  */
 public class Garson {
@@ -54,6 +59,8 @@ public class Garson {
     private int padding;
     private Drawable tipViewShape;
     private ClickCallbacks clicks;
+    private int enterAnimation;
+    private int exitAnimation;
 
     private Garson(FrameLayout areaView) {
         this.areaView = areaView;
@@ -66,6 +73,7 @@ public class Garson {
 
     /**
      * Creates Garson to highlight something inside activity
+     *
      * @param area to dim
      * @return created Gason obj
      */
@@ -83,6 +91,7 @@ public class Garson {
 
     /**
      * Creates Garson to highlight something inside FrameLayout
+     *
      * @param area to dim
      * @return created Garson obj
      */
@@ -120,11 +129,27 @@ public class Garson {
 
     /**
      * Color.argb(122,0,0,0) by default
+     *
      * @param color for dim
      * @return self
      */
     public Garson withDimColor(int color) {
         this.dimColor = color;
+        return this;
+    }
+
+    /**
+     * Animations for dimming
+     * default enter animation - circular reveal
+     * default exit animation - fade out
+     *
+     * @param enterAnim animation to show views
+     * @param exitAnim  animation to hide views
+     * @return self
+     */
+    public Garson withAnimations(@AnimRes int enterAnim, @AnimRes int exitAnim) {
+        enterAnimation = enterAnim;
+        exitAnimation = exitAnim;
         return this;
     }
 
@@ -135,7 +160,8 @@ public class Garson {
 
     /**
      * Will show Garson-tip with mask obtained from shape
-     * @param view object that will be highlighted
+     *
+     * @param view      object that will be highlighted
      * @param withShape shape to create mask
      */
     public void tip(View view, Drawable withShape) {
@@ -145,6 +171,7 @@ public class Garson {
 
     /**
      * Will show Garson-tip with mask obtained from view
+     *
      * @param view object that will be highlighted
      */
     public void tip(View view) {
@@ -164,7 +191,7 @@ public class Garson {
                 textHelper.addTextView(
                         areaView,
                         new Point(viewToTip.getWidth(), viewToTip.getHeight()),
-                        getMaskLocation(viewToTip, areaView), padding, hintTextView
+                        getViewLocation(viewToTip, areaView), padding, hintTextView
                 );
             }
         }, areaView, viewToTip);
@@ -179,16 +206,18 @@ public class Garson {
     private void insertTipView() {
         backgroundView = new BackgroundView(areaView.getContext());
         areaView.addView(backgroundView, PARAMS);
-        onPreDrawAction(viewToTip, new Runnable() {
+        onPreDrawAction(new Runnable() {
             @Override
             public void run() {
+                Point viewLocation = getViewLocation(viewToTip, areaView);
                 backgroundView.setState(
                         dimColor,
                         generateAndSetMask(viewToTip, tipViewShape, dimColor),
-                        getMaskLocation(viewToTip, areaView)
+                        viewLocation
                 );
+                animateBackgroundReveal(backgroundView, viewLocation, viewToTip, areaView);
             }
-        });
+        }, viewToTip, areaView);
         backgroundView.setClickCallbacks(new ClickCallbacksAdapter() {
             @Override
             public void onBackgroundClicked(Garson garson) {
@@ -204,6 +233,24 @@ public class Garson {
                 }
             }
         });
+    }
+
+    private void animateBackgroundReveal(BackgroundView backgroundView, Point viewLocation,
+                                         View viewToTip, View areaView) {
+        if (enterAnimation > 0) {
+            AnimationUtils.loadAnimation(backgroundView.getContext(), enterAnimation).start();
+        } else {
+            int startRadius = Math.min(viewToTip.getWidth(), viewToTip.getHeight());
+            int endRadius = Math.max(areaView.getWidth(), areaView.getHeight());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ViewAnimationUtils.createCircularReveal(
+                        backgroundView,
+                        viewLocation.x + viewToTip.getWidth() / 2,
+                        viewLocation.y + viewToTip.getHeight() / 2,
+                        startRadius, endRadius
+                ).start();
+            }
+        }
     }
 
     private Bitmap generateAndSetMask(final View viewToTip, @Nullable Drawable tipViewShape, int color) {
@@ -226,22 +273,34 @@ public class Garson {
         return result;
     }
 
-    private Point getMaskLocation(View viewToTip, View areaView) {
-        Point maskLocation = new Point();
+    private Point getViewLocation(View viewToTip, View areaView) {
+        Point viewLocation = new Point();
         int[] location = new int[2];
         viewToTip.getLocationInWindow(location);
-        maskLocation.set(location[0], location[1]);
+        viewLocation.set(location[0], location[1]);
         areaView.getLocationOnScreen(location);
-        maskLocation.x -= location[0];
-        maskLocation.y -= location[1];
-        return maskLocation;
+        viewLocation.x -= location[0];
+        viewLocation.y -= location[1];
+        return viewLocation;
     }
 
     /**
      * Closes Garson tip and cleans related objects
      */
     public void dismiss() {
-        onDestroy();
+        Animation anim;
+        if (exitAnimation > 0) {
+            anim = AnimationUtils.loadAnimation(areaView.getContext(), exitAnimation);
+        } else {
+            anim = AnimationUtils.loadAnimation(areaView.getContext(), android.R.anim.fade_out);
+        }
+        anim.setAnimationListener(new AnimationListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                onDestroy();
+            }
+        });
+        areaView.startAnimation(anim);
     }
 
     private void onDestroy() {
