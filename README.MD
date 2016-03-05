@@ -18,3 +18,4 @@ TODOs
 ---
 - Points to extend/customize tips ui (text positioning, content instead of text, animations, highlight options, something else...)
 - Api to chain several Garsons' objs in appropriate conditional/eventual order
+- Tests
