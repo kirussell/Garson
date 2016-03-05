@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="vestDimColor">#a08a3dff</color>
     <color name="white">#FFF</color>
+
+    <color name="sampleBg">#689fff</color>
 </resources>

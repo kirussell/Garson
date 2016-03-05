@@ -6,15 +6,17 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@color/white">
+    android:background="@color/sampleBg">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/app_name"
+        android:textColor="@color/white"
         android:layout_gravity="center_horizontal"
-        android:textSize="25sp"/>
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-light"/>
 
     <ImageView
         android:id="@+id/icon"
@@ -28,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textColor="#ffffff"
+        android:textColor="@color/sampleBg"
         android:textStyle="bold"
         android:layout_gravity="right|bottom"
         android:textSize="25sp"
