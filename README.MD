@@ -5,17 +5,23 @@ Garson
 The android library to tip / highlight parts of your layout.
 Just like that:
 
-// TODO pics
+![](assets/screenshots/highlight_by_view_mask.png)
+![](assets/screenshots/highlight_by_shape.png)
+![](assets/screenshots/hightlight_text.png)
 
+How to use:
+---
+- Highlight view
 ```java
 Garson.in(MainActivity.this)
        .with("I'm at your service, sir!")
-       .withDimColor(res.getColor(R.color.red_green_blue));
        .tip(viewToHighlight);
 ```
+-
+- More in sample
 
 TODOs
 ---
-- Points to extend/customize tips ui (text positioning, content instead of text, animations, highlight options, something else...)
+- Points to extend/customize tips ui (text positioning, content instead of text, highlight options, something else...)
 - Api to chain several Garsons' objs in appropriate conditional/eventual order
 - Tests
