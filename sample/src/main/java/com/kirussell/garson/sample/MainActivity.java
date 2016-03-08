@@ -85,10 +85,25 @@ public class MainActivity extends AppCompatActivity {
                         if (v instanceof ImageView) {
                             ((ImageView) v).setImageResource(R.drawable.vest);
                         }
-                        highlightNinjaText();
+                        highlightShapeWithOffset(v);
                     }
                 })
                 .tip(v, ContextCompat.getDrawable(MainActivity.this, R.drawable.vest));
+    }
+
+    private void highlightShapeWithOffset(final View v) {
+        Garson.in(this)
+                .with(getString(R.string.hint_android_logo_shape_offset), R.dimen.textSize, 0)
+                .withDimColor(ContextCompat.getColor(this, R.color.vestDimColor))
+                .callback(new ClickCallbacksAdapter() {
+                    @Override
+                    public void onTipViewClicked(Garson garson) {
+                        garson.dismiss();
+                        highlightNinjaText();
+                    }
+                })
+                .tip(v, ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_shape),
+                        R.dimen.shape_offset);
     }
 
     private void highlightNinjaText() {

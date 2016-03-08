@@ -3,6 +3,7 @@
     <string name="hidden_text_tip">Text also can be masked and highlighted, to dismiss click on this text</string>
     <string name="hint_android_logo">Garson highlights logo by creating mask from view, click anywhere outside highlighted view to go next</string>
     <string name="hint_android_logo_ext">You can add your views into tip frame area</string>
+    <string name="hint_android_logo_shape_offset">And set shape offset. Click on highlighted view to go next</string>
     <string name="hint_android_logo_vest">You can pass shape that will be highlighted. Click on highlighted view to go next</string>
     <string name="next">Next</string>
     <string name="custom_animations_tip">You can configure enter/exit animaitons</string>
