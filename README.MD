@@ -1,5 +1,8 @@
+
 Garson
 ---
+![](/sample/src/main/res/mipmap-xhdpi/ic_launcher.png)
+
 ... at your service!
 
 The android library to tip / highlight parts of your layout.
@@ -21,7 +24,7 @@ Garson.in(MainActivity.this)
 TODOs
 ---
 * v0.1.0
-       * Points to extend/customize tips ui (text positioning, content instead of text, highlight options)
+       * ~~Points to extend/customize tips ui (text positioning, content instead of text, highlight options)~~
        * Api to chain several Garsons' objs in appropriate conditional/eventual order
        * Tests
        * Deploy
