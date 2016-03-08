@@ -1,19 +1,14 @@
 package com.kirussell.garson;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.AnimRes;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
-import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -33,7 +28,7 @@ import static com.kirussell.garson.ViewTreeObserverUtils.*;
 
 /**
  * Created by russellkim on 26/01/16.
- * <p>
+ * <p/>
  * more info in README.md
  */
 public class Garson {
@@ -45,6 +40,7 @@ public class Garson {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private TextViewHelper textHelper;
+    private TipViewMaskHelper maskHelper;
 
     private FrameLayout areaView;
     private View viewToTip;
@@ -69,6 +65,7 @@ public class Garson {
                 this.areaView.getResources().getDisplayMetrics()
         );
         textHelper = new TextViewHelper(areaView.getContext(), executor);
+        maskHelper = new TipViewMaskHelper(areaView.getContext(), executor);
         clicks = new DismissClicksCallbackWrapper();
     }
 
@@ -168,11 +165,16 @@ public class Garson {
     /**
      * Will show Garson-tip with mask obtained from shape
      *
-     * @param view      object that will be highlighted
-     * @param withShape shape to create mask
+     * @param view  object that will be highlighted
+     * @param shape shape to create mask
      */
-    public void tip(View view, Drawable withShape) {
-        tipViewShape = withShape;
+    public void tip(View view, Drawable shape) {
+        tip(view, shape, 0);
+    }
+
+    public void tip(View view, Drawable shape, @DimenRes int insetDimen) {
+        tipViewShape = shape;
+        maskHelper.setInset(insetDimen);
         tip(view);
     }
 
@@ -200,11 +202,8 @@ public class Garson {
             onPreDrawAction(new Runnable() {
                 @Override
                 public void run() {
-                    textHelper.addTextView(
-                            areaView,
-                            new Point(viewToTip.getWidth(), viewToTip.getHeight()),
-                            getViewLocation(viewToTip, areaView), padding, tipTextView
-                    );
+                    textHelper.addTextView(areaView, maskHelper.getMaskBounds(viewToTip, areaView),
+                            padding, tipTextView);
                 }
             }, areaView, viewToTip);
             tipTextView.setOnClickListener(new View.OnClickListener() {
@@ -222,13 +221,13 @@ public class Garson {
         onPreDrawAction(new Runnable() {
             @Override
             public void run() {
-                Point viewLocation = getViewLocation(viewToTip, areaView);
+                Rect maskBounds = maskHelper.getMaskBounds(viewToTip, areaView);
                 backgroundView.setState(
                         dimColor,
-                        generateMask(viewToTip, tipViewShape, dimColor),
-                        viewLocation
+                        maskHelper.generateMask(viewToTip, tipViewShape, dimColor),
+                        new Point(maskBounds.left, maskBounds.top)
                 );
-                animateBackgroundReveal(backgroundView, viewLocation, viewToTip, areaView);
+                animateBackgroundReveal(backgroundView, maskBounds, areaView);
             }
         }, viewToTip, areaView);
         backgroundView.setClickCallbacks(new ClickCallbacksAdapter() {
@@ -244,55 +243,25 @@ public class Garson {
         });
     }
 
-    private void animateBackgroundReveal(BackgroundView backgroundView, Point viewLocation,
-                                         View viewToTip, View areaView) {
+    private void animateBackgroundReveal(BackgroundView backgroundView, Rect maskBounds, View areaView) {
         if (enterAnimation > 0) {
             backgroundView.startAnimation(
                     AnimationUtils.loadAnimation(backgroundView.getContext(), enterAnimation)
             );
         } else {
-            int startRadius = Math.min(viewToTip.getWidth(), viewToTip.getHeight());
+            int width = maskBounds.width();
+            int height = maskBounds.height();
+            int startRadius = Math.min(width, height);
             int endRadius = Math.max(areaView.getWidth(), areaView.getHeight());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 ViewAnimationUtils.createCircularReveal(
                         backgroundView,
-                        viewLocation.x + viewToTip.getWidth() / 2,
-                        viewLocation.y + viewToTip.getHeight() / 2,
+                        maskBounds.left + width / 2,
+                        maskBounds.top + height / 2,
                         startRadius, endRadius
                 ).start();
             }
         }
-    }
-
-    private Bitmap generateMask(final View viewToTip, @Nullable Drawable tipViewShape, int color) {
-        int width = viewToTip.getWidth();
-        int height = viewToTip.getHeight();
-        Bitmap mask = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
-        if (tipViewShape != null) {
-            tipViewShape.setBounds(0, 0, width, height);
-            tipViewShape.draw(new Canvas(mask));
-        } else {
-            viewToTip.draw(new Canvas(mask));
-        }
-        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        canvas.drawColor(color);
-        Paint paint = new Paint();
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawBitmap(mask, 0, 0, paint);
-        mask.recycle();
-        return result;
-    }
-
-    private Point getViewLocation(View viewToTip, View areaView) {
-        Point viewLocation = new Point();
-        int[] location = new int[2];
-        viewToTip.getLocationInWindow(location);
-        viewLocation.set(location[0], location[1]);
-        areaView.getLocationOnScreen(location);
-        viewLocation.x -= location[0];
-        viewLocation.y -= location[1];
-        return viewLocation;
     }
 
     /**

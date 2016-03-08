@@ -64,9 +64,8 @@ public class TextViewHelper {
     }
 
     @UiThread
-    void addTextView(final FrameLayout container,
-                        final Point maskSize, final Point maskLocation,
-                        final int padding, final TextView text) {
+    void addTextView(final FrameLayout container, final Rect maskBounds,
+                     final int padding, final TextView text) {
         final Point areaSize = new Point(container.getWidth(), container.getHeight());
         final Typeface typeface = text.getTypeface();
         final float textSize = text.getTextSize();
@@ -79,7 +78,7 @@ public class TextViewHelper {
             public void run() {
                 final TextViewHelper.TextMetrics metrics = createTextMetrics(
                         areaSize,
-                        maskLocation, maskSize,
+                        maskBounds,
                         content,
                         textSize, typeface, spacemult, spaceadd,
                         padding
@@ -104,7 +103,7 @@ public class TextViewHelper {
     }
 
     @Nullable
-    TextMetrics createTextMetrics(Point areaSize, Point maskLocation, Point maskSize,
+    TextMetrics createTextMetrics(Point areaSize, Rect maskBounds,
                                   CharSequence text, float textSize, Typeface textTypeface,
                                   float spacingmult, float spacingadd, int padding) {
         TextPaint paint = new TextPaint();
@@ -112,10 +111,10 @@ public class TextViewHelper {
         paint.setTypeface(textTypeface);
         int areaWidth = areaSize.x - 2 * padding;
         int areaHeight = areaSize.y - 2 * padding;
-        int leftAreaWidth = maskLocation.x - 2 * padding;
-        int rightAreaWidth = areaSize.x - maskLocation.x - maskSize.x - 2 * padding;
-        int topAreaHeight = maskLocation.y - 2 * padding;
-        int bottomAreaHeight = areaSize.y - maskLocation.y - maskSize.y - 2 * padding;
+        int leftAreaWidth = maskBounds.left - 2 * padding;
+        int rightAreaWidth = areaSize.x - maskBounds.left - maskBounds.width() - 2 * padding;
+        int topAreaHeight = maskBounds.top - 2 * padding;
+        int bottomAreaHeight = areaSize.y - maskBounds.top - maskBounds.height() - 2 * padding;
 
         Rect margins = new Rect();
         TextMetrics textMetrics = null;
@@ -127,15 +126,15 @@ public class TextViewHelper {
         if (topAreaHeight > bottomAreaHeight) {
             if (textHeight <= topAreaHeight) {
                 // top
-                calcPositionX(maskLocation, maskSize, areaWidth, textWidth, padding, margins);
-                margins.top = maskLocation.y - textHeight - padding;
+                calcPositionX(maskBounds, areaWidth, textWidth, padding, margins);
+                margins.top = maskBounds.top - textHeight - padding;
                 textMetrics = new TextMetrics(margins, linesCount);
             }
         } else {
             if (textHeight < bottomAreaHeight) {
                 // bottom
-                calcPositionX(maskLocation, maskSize, areaWidth, textWidth, padding, margins);
-                margins.top = maskLocation.y + maskSize.y + textHeight + padding;
+                calcPositionX(maskBounds, areaWidth, textWidth, padding, margins);
+                margins.top = maskBounds.top + maskBounds.height() + textHeight + padding;
                 textMetrics = new TextMetrics(margins, linesCount);
             }
         }
@@ -143,13 +142,13 @@ public class TextViewHelper {
             if (leftAreaWidth > rightAreaWidth) {
                 // left
                 sl = new StaticLayout(text, paint, leftAreaWidth, Layout.Alignment.ALIGN_NORMAL, spacingmult, spacingadd, false);
-                margins.left = maskLocation.x - padding - textWidth;
+                margins.left = maskBounds.left - padding - textWidth;
             } else {
                 // right
                 sl = new StaticLayout(text, paint, rightAreaWidth, Layout.Alignment.ALIGN_NORMAL, spacingmult, spacingadd, false);
-                margins.left = maskLocation.x + maskSize.x + padding;
+                margins.left = maskBounds.left + maskBounds.width() + padding;
             }
-            margins.top = maskLocation.y + (maskSize.y - textHeight) / 2;
+            margins.top = maskBounds.top + (maskBounds.height() - textHeight) / 2;
             if (sl.getHeight() <= areaHeight) {
                 textMetrics = new TextMetrics(margins, linesCount);
             }
@@ -157,13 +156,13 @@ public class TextViewHelper {
         return textMetrics;
     }
 
-    private void calcPositionX(Point maskLocation, Point maskSize, int areaWidth, int textWidth, int padding, Rect margins) {
+    private void calcPositionX(Rect maskBounds, int areaWidth, int textWidth, int padding, Rect margins) {
         if (areaWidth == textWidth) {
             margins.left = padding;
             margins.right = padding;
             return;
         }
-        int pos = maskLocation.x + (maskSize.x - textWidth) / 2;
+        int pos = maskBounds.left + (maskBounds.width() - textWidth) / 2;
         if (areaWidth < pos + textWidth) {
             pos = pos - (pos + textWidth - areaWidth);
         }
