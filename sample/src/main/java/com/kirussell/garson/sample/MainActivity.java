@@ -98,8 +98,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onHintTextClicked(Garson garson) {
                         garson.dismiss();
+                        hightlightWithCustomAnimations(ninjaText);
                     }
                 })
                 .tip(ninjaText);
+    }
+
+    private void hightlightWithCustomAnimations(View v) {
+        Garson.in(this)
+                .with(getString(R.string.custom_animations_tip))
+                .withAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .tip(v);
     }
 }
