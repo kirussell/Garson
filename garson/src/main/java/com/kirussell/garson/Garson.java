@@ -247,7 +247,9 @@ public class Garson {
     private void animateBackgroundReveal(BackgroundView backgroundView, Point viewLocation,
                                          View viewToTip, View areaView) {
         if (enterAnimation > 0) {
-            AnimationUtils.loadAnimation(backgroundView.getContext(), enterAnimation).start();
+            backgroundView.startAnimation(
+                    AnimationUtils.loadAnimation(backgroundView.getContext(), enterAnimation)
+            );
         } else {
             int startRadius = Math.min(viewToTip.getWidth(), viewToTip.getHeight());
             int endRadius = Math.max(areaView.getWidth(), areaView.getHeight());
