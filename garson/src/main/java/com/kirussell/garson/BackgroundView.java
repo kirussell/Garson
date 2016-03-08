@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -28,7 +27,7 @@ public class BackgroundView extends View implements GestureDetector.OnGestureLis
     private Rect[] rects = new Rect[4];
     private Paint bgPaint;
     private ClickCallbacks clicks;
-    private GestureDetectorCompat gestureDetectorCompat;
+    private GestureDetector gestureDetectorCompat;
 
     BackgroundView(Context context) {
         this(context, null);
@@ -55,7 +54,7 @@ public class BackgroundView extends View implements GestureDetector.OnGestureLis
         for (int i = 0; i < rects.length; i++) {
             rects[i] = new Rect();
         }
-        gestureDetectorCompat = new GestureDetectorCompat(getContext(), BackgroundView.this);
+        gestureDetectorCompat = new GestureDetector(getContext(), BackgroundView.this);
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

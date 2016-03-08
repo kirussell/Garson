@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.ColorRes;
@@ -15,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
-import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -24,6 +22,8 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.kirussell.garson.compat.ContextCompat;
 
 import java.util.concurrent.Executor;
 
