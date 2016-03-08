@@ -1,6 +1,5 @@
 package com.kirussell.garson;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -9,25 +8,18 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DimenRes;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * Created by russellkim on 08/03/16.
+ * Helper to generate and position mask
  */
 public class TipViewMaskHelper {
 
-
-    private final Context context;
-    private final ExecutorService executor;
     private int inset;
 
-    public TipViewMaskHelper(Context context, ExecutorService executor) {
-        this.context = context;
-        this.executor = executor;
+    public TipViewMaskHelper() {
         this.inset = 0;
     }
 
@@ -70,9 +62,7 @@ public class TipViewMaskHelper {
         return bounds;
     }
 
-    public void setInset(@DimenRes int insetDimen) {
-        if (insetDimen > 0) {
-            this.inset = context.getResources().getDimensionPixelSize(insetDimen);
-        }
+    public void setInset(int inset) {
+        this.inset = inset;
     }
 }

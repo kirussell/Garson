@@ -65,7 +65,7 @@ public class Garson {
                 this.areaView.getResources().getDisplayMetrics()
         );
         textHelper = new TextViewHelper(areaView.getContext(), executor);
-        maskHelper = new TipViewMaskHelper(areaView.getContext(), executor);
+        maskHelper = new TipViewMaskHelper();
         clicks = new DismissClicksCallbackWrapper();
     }
 
@@ -174,7 +174,11 @@ public class Garson {
 
     public void tip(View view, Drawable shape, @DimenRes int insetDimen) {
         tipViewShape = shape;
-        maskHelper.setInset(insetDimen);
+        if (insetDimen > 0) {
+            maskHelper.setInset(
+                    view.getResources().getDimensionPixelSize(insetDimen)
+            );
+        }
         tip(view);
     }
 
