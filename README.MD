@@ -1,5 +1,5 @@
 
-Garson
+Garson [![Build Status](https://travis-ci.org/kirussell/Garson.svg?branch=master)](https://travis-ci.org/kirussell/Garson)
 ---
 ![](/sample/src/main/res/mipmap-xhdpi/ic_launcher.png)
 
