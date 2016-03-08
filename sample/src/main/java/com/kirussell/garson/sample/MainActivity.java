@@ -5,9 +5,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.kirussell.garson.ClickCallbacksAdapter;
+import com.kirussell.garson.ExtensionCallback;
 import com.kirussell.garson.Garson;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,20 +43,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void highlightLogo(final View v) {
-        Garson.in(MainActivity.this)
+        Garson.in(this)
                 .with(getString(R.string.hint_android_logo))
                 .callback(new ClickCallbacksAdapter() {
                     @Override
                     public void onBackgroundClicked(Garson garson) {
                         garson.dismiss();
-                        highlightVest(v);
+                        highlightWithExtension(v);
                     }
                 })
                 .tip(v);
     }
 
+    private void highlightWithExtension(final View logo) {
+        Garson.in(this)
+                .with(getString(R.string.hint_android_logo_ext))
+                .callback(new ExtensionCallback() {
+                    @Override
+                    public void onTipCreation(final Garson garson, FrameLayout tipArea) {
+                        View area = View.inflate(tipArea.getContext(), R.layout.custom_tip_ui, tipArea);
+                        area.findViewById(R.id.next_btn).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View btn) {
+                                garson.dismiss();
+                                highlightVest(logo);
+                            }
+                        });
+                    }
+                })
+                .tip(logo);
+    }
+
     private void highlightVest(final View v) {
-        Garson.in(MainActivity.this)
+        Garson.in(this)
                 .with(getString(R.string.hint_android_logo_vest), R.dimen.textSize, 0)
                 .withDimColor(ContextCompat.getColor(this, R.color.vestDimColor))
                 .callback(new ClickCallbacksAdapter() {
@@ -71,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void highlightNinjaText() {
-        Garson.in(MainActivity.this)
+        Garson.in(this)
                 .with(getString(R.string.hidden_text_tip), R.dimen.textSize, 0)
                 .callback(new ClickCallbacksAdapter() {
                     @Override

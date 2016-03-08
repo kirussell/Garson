@@ -15,6 +15,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -32,7 +33,7 @@ import static com.kirussell.garson.ViewTreeObserverUtils.*;
 
 /**
  * Created by russellkim on 26/01/16.
- * <p/>
+ * <p>
  * more info in README.md
  */
 public class Garson {
@@ -41,16 +42,14 @@ public class Garson {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
     );
-    private static final int GARSON_ID = R.id.garson_id;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-
     private TextViewHelper textHelper;
 
     private FrameLayout areaView;
     private View viewToTip;
     private BackgroundView backgroundView;
-    private TextView hintTextView;
+    private TextView tipTextView;
     private CharSequence withText;
     private int dimColor = Color.argb(122, 0, 0, 0);
     private int textStyleResId;
@@ -58,9 +57,10 @@ public class Garson {
     private int textColorResId;
     private int padding;
     private Drawable tipViewShape;
-    private ClickCallbacks clicks;
+    private DismissClicksCallbackWrapper clicks;
     private int enterAnimation;
     private int exitAnimation;
+    private ExtensionCallback extension;
 
     private Garson(FrameLayout areaView) {
         this.areaView = areaView;
@@ -69,6 +69,7 @@ public class Garson {
                 this.areaView.getResources().getDisplayMetrics()
         );
         textHelper = new TextViewHelper(areaView.getContext(), executor);
+        clicks = new DismissClicksCallbackWrapper();
     }
 
     /**
@@ -79,13 +80,7 @@ public class Garson {
      */
     public static Garson in(final Activity area) {
         FrameLayout frame = new FrameLayout(area);
-        area.getWindow().addContentView(
-                frame,
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                )
-        );
-        frame.setTag(GARSON_ID, Boolean.TRUE);
+        area.getWindow().addContentView(frame, PARAMS);
         return new Garson(frame);
     }
 
@@ -96,7 +91,8 @@ public class Garson {
      * @return created Garson obj
      */
     public static Garson in(FrameLayout area) {
-        area.setTag(GARSON_ID, Boolean.FALSE);
+        FrameLayout frame = new FrameLayout(area.getContext());
+        area.addView(frame, PARAMS);
         return new Garson(area);
     }
 
@@ -153,8 +149,19 @@ public class Garson {
         return this;
     }
 
+    /**
+     * By default tip will be dismissed when user clicks anywhere
+     *
+     * @param clicks callback to handle manually
+     * @return self
+     */
     public Garson callback(ClickCallbacks clicks) {
-        this.clicks = clicks;
+        this.clicks.setHost(clicks);
+        return this;
+    }
+
+    public Garson callback(ExtensionCallback extension) {
+        this.extension = extension;
         return this;
     }
 
@@ -178,29 +185,35 @@ public class Garson {
         viewToTip = view;
         insertTipView();
         insertTextView();
+        if (extension != null) {
+            extension.onTipCreation(this, areaView);
+            extension = null;
+        }
     }
 
     private void insertTextView() {
-        hintTextView = textHelper.createTextView(
-                textSizeDimenId, textColorResId,
-                textStyleResId, withText
-        );
-        onPreDrawAction(new Runnable() {
-            @Override
-            public void run() {
-                textHelper.addTextView(
-                        areaView,
-                        new Point(viewToTip.getWidth(), viewToTip.getHeight()),
-                        getViewLocation(viewToTip, areaView), padding, hintTextView
-                );
-            }
-        }, areaView, viewToTip);
-        hintTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clicks.onHintTextClicked(Garson.this);
-            }
-        });
+        if (!TextUtils.isEmpty(withText)) {
+            tipTextView = textHelper.createTextView(
+                    textSizeDimenId, textColorResId,
+                    textStyleResId, withText
+            );
+            onPreDrawAction(new Runnable() {
+                @Override
+                public void run() {
+                    textHelper.addTextView(
+                            areaView,
+                            new Point(viewToTip.getWidth(), viewToTip.getHeight()),
+                            getViewLocation(viewToTip, areaView), padding, tipTextView
+                    );
+                }
+            }, areaView, viewToTip);
+            tipTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clicks.onHintTextClicked(Garson.this);
+                }
+            });
+        }
     }
 
     private void insertTipView() {
@@ -221,16 +234,12 @@ public class Garson {
         backgroundView.setClickCallbacks(new ClickCallbacksAdapter() {
             @Override
             public void onBackgroundClicked(Garson garson) {
-                if (clicks != null) {
-                    clicks.onBackgroundClicked(Garson.this);
-                }
+                clicks.onBackgroundClicked(Garson.this);
             }
 
             @Override
             public void onTipViewClicked(Garson garson) {
-                if (clicks != null) {
-                    clicks.onTipViewClicked(Garson.this);
-                }
+                clicks.onTipViewClicked(Garson.this);
             }
         });
     }
@@ -304,16 +313,14 @@ public class Garson {
     }
 
     private void onDestroy() {
-        if ((Boolean) areaView.getTag(GARSON_ID)) {
-            ViewParent parent = areaView.getParent();
-            if (parent instanceof ViewGroup) {
-                ((ViewGroup) parent).removeView(areaView);
-            }
-        } else {
-            areaView.removeView(backgroundView);
-            areaView.removeView(hintTextView);
+        ViewParent parent = areaView.getParent();
+        if (parent instanceof ViewGroup) {
+            ((ViewGroup) parent).removeView(areaView);
         }
         backgroundView = null;
+        tipTextView = null;
+        viewToTip = null;
         areaView = null;
     }
+
 }
