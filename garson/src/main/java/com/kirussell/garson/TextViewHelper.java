@@ -123,7 +123,7 @@ public class TextViewHelper {
         final int linesCount = sl.getLineCount();
         int textWidth = linesCount == 1 ? (int) paint.measureText(text.toString()) : sl.getWidth();
         int textHeight = sl.getHeight();
-        if (topAreaHeight > bottomAreaHeight) {
+        if (topAreaHeight >= bottomAreaHeight) {
             if (textHeight <= topAreaHeight) {
                 // top
                 calcPositionX(maskBounds, areaWidth, textWidth, padding, margins);
@@ -139,7 +139,7 @@ public class TextViewHelper {
             }
         }
         if (textMetrics == null) {
-            if (leftAreaWidth > rightAreaWidth) {
+            if (leftAreaWidth >= rightAreaWidth) {
                 // left
                 sl = new StaticLayout(text, paint, leftAreaWidth, Layout.Alignment.ALIGN_NORMAL, spacingmult, spacingadd, false);
                 margins.left = maskBounds.left - padding - textWidth;

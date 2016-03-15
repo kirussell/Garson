@@ -1,9 +1,11 @@
 package com.kirussell.garson;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Method;
@@ -36,5 +38,9 @@ public class GarsonRobolectricUnitTestRunner extends RobolectricGradleTestRunner
                 defaultConfig.libraries(),
                 defaultConfig.constants() == Void.class ? BuildConfig.class : defaultConfig.constants()
         );
+    }
+
+    public static Context appContext() {
+        return RuntimeEnvironment.application;
     }
 }
