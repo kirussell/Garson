@@ -28,7 +28,7 @@ public class TipViewMaskHelper {
         int[] location = new int[2];
         viewToTip.getLocationInWindow(location);
         viewLocation.set(location[0], location[1]);
-        areaView.getLocationOnScreen(location);
+        areaView.getLocationInWindow(location);
         viewLocation.x -= location[0];
         viewLocation.y -= location[1];
         return viewLocation;
