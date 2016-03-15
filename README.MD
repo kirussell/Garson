@@ -26,5 +26,5 @@ TODOs
 * v0.1.0
        * ~~Points to extend/customize tips ui (text positioning, content instead of text, highlight options)~~
        * Api to chain several Garsons' objs in appropriate conditional/eventual order
-       * Tests
-       * Deploy
+       * ~~Tests ¯\_ツ_/¯~~
+       * ~~Deploy~~
