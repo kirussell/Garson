@@ -53,10 +53,12 @@ public class Garson {
     private int textColorResId;
     private int padding;
     private Drawable tipViewShape;
+    private int tipViewShapeInsetDimen;
     private DismissClicksCallbackWrapper clicks;
     private int enterAnimation;
     private int exitAnimation;
     private ExtensionCallback extension;
+    private OnDestroyListener onDestroyListener;
 
     private Garson(FrameLayout areaView) {
         this.areaView = areaView;
@@ -76,9 +78,13 @@ public class Garson {
      * @return created Gason obj
      */
     public static Garson in(final Activity area) {
+        return new Garson(createFrameForGarson(area));
+    }
+
+    static FrameLayout createFrameForGarson(Activity area) {
         FrameLayout frame = new FrameLayout(area);
         area.getWindow().addContentView(frame, PARAMS);
-        return new Garson(frame);
+        return frame;
     }
 
     /**
@@ -146,6 +152,16 @@ public class Garson {
         return this;
     }
 
+    public Garson withShape(Drawable shape) {
+        return withShape(shape, 0);
+    }
+
+    public Garson withShape(Drawable shape, @DimenRes int insetDimen) {
+        tipViewShape = shape;
+        tipViewShapeInsetDimen = insetDimen;
+        return this;
+    }
+
     /**
      * By default tip will be dismissed when user clicks anywhere
      *
@@ -168,19 +184,6 @@ public class Garson {
      * @param view  object that will be highlighted
      * @param shape shape to create mask
      */
-    public void tip(View view, Drawable shape) {
-        tip(view, shape, 0);
-    }
-
-    public void tip(View view, Drawable shape, @DimenRes int insetDimen) {
-        tipViewShape = shape;
-        if (insetDimen > 0) {
-            maskHelper.setInset(
-                    view.getResources().getDimensionPixelSize(insetDimen)
-            );
-        }
-        tip(view);
-    }
 
     /**
      * Will show Garson-tip with mask obtained from view
@@ -189,6 +192,11 @@ public class Garson {
      */
     public void tip(View view) {
         viewToTip = view;
+        if (tipViewShapeInsetDimen > 0) {
+            maskHelper.setInset(
+                    viewToTip.getResources().getDimensionPixelSize(tipViewShapeInsetDimen)
+            );
+        }
         insertTipView();
         insertTextView();
         if (extension != null) {
@@ -296,6 +304,16 @@ public class Garson {
         tipTextView = null;
         viewToTip = null;
         areaView = null;
+        if (onDestroyListener != null) {
+            onDestroyListener.onDestroy();
+        }
     }
 
+    void setOnDestroyListener(OnDestroyListener listener) {
+        onDestroyListener = listener;
+    }
+
+    interface OnDestroyListener {
+        void onDestroy();
+    }
 }

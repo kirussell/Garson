@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
                         highlightShapeWithOffset(v);
                     }
                 })
-                .tip(v, ContextCompat.getDrawable(MainActivity.this, R.drawable.vest));
+                .withShape(ContextCompat.getDrawable(MainActivity.this, R.drawable.vest))
+                .tip(v);
     }
 
     private void highlightShapeWithOffset(final View v) {
@@ -102,8 +103,11 @@ public class MainActivity extends AppCompatActivity {
                         highlightNinjaText();
                     }
                 })
-                .tip(v, ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_shape),
-                        R.dimen.shape_offset);
+                .withShape(
+                        ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_shape),
+                        R.dimen.shape_offset
+                )
+                .tip(v);
     }
 
     private void highlightNinjaText() {
