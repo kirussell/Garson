@@ -21,10 +21,15 @@ Garson.in(MainActivity.this)
 -
 - More in sample
 
-TODOs
+Release notes
 ---
 * v0.1.0
+       * ~~Main functionality~~
        * ~~Points to extend/customize tips ui (text positioning, content instead of text, highlight options)~~
-       * Api to chain several Garsons' objs in appropriate conditional/eventual order
        * ~~Tests ¯\_ツ_/¯~~
        * ~~Deploy~~
+
+TODOs
+---
+* v0.2.0
+       * Api to chain several Garsons' objs in appropriate conditional/eventual order
